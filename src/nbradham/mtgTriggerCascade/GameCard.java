@@ -18,7 +18,7 @@ public abstract class GameCard {
 		return name;
 	}
 
-	boolean isType(final CardType type) {
+	public boolean isType(final CardType type) {
 		return types.contains(type);
 	}
 

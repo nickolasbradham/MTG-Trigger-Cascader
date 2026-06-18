@@ -1,13 +1,17 @@
 package nbradham.mtgTriggerCascade;
 
-final class TokenCard extends GameCard {
+public final class TokenCopy extends GameCard {
 
 	private final GameCard copy;
 
-	TokenCard(GameCard copyOf, CardType additionalType) {
+	TokenCopy(GameCard copyOf, CardType additionalType) {
+		this(copyOf);
+		types.add(additionalType);
+	}
+
+	public TokenCopy(GameCard copyOf) {
 		super("Token of " + copyOf.getName(), copyOf.types.toArray(new CardType[0]));
 		copy = copyOf;
-		types.add(additionalType);
 		types.add(CardType.Token);
 	}
 }

@@ -1,6 +1,5 @@
 package nbradham.mtgTriggerCascade;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 
@@ -8,7 +7,7 @@ public abstract class GameCard {
 
 	private final String name;
 	protected final HashSet<CardType> types = new HashSet<>();
-	private final ArrayList<KeywordAbility> abilities = new ArrayList<>();
+	private final HashSet<KeywordAbility> abilities = new HashSet<>();
 
 	protected GameCard(final String cardName, final CardType[] cardTypes) {
 		name = cardName;

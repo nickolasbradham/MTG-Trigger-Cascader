@@ -1,5 +1,5 @@
 package nbradham.mtgTriggerCascade;
 
 public enum KeywordAbility {
-	DoubleStrike, Lifelink
+	DoubleStrike, Lifelink, Flying
 }

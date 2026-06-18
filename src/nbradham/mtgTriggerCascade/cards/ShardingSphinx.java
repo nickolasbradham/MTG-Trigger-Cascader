@@ -2,6 +2,7 @@ package nbradham.mtgTriggerCascade.cards;
 
 import nbradham.mtgTriggerCascade.CardType;
 import nbradham.mtgTriggerCascade.GameCard;
+import nbradham.mtgTriggerCascade.KeywordAbility;
 
 public final class ShardingSphinx extends GameCard {
 
@@ -9,5 +10,6 @@ public final class ShardingSphinx extends GameCard {
 
 	public ShardingSphinx() {
 		super("Sharding Sphinx", TYPES);
+		abilities.add(KeywordAbility.Flying);
 	}
 }

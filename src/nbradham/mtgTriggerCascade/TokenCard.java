@@ -8,5 +8,6 @@ final class TokenCard extends GameCard {
 		super("Token of " + copyOf.getName(), copyOf.types.toArray(new CardType[0]));
 		copy = copyOf;
 		types.add(additionalType);
+		types.add(CardType.Token);
 	}
 }

@@ -13,6 +13,10 @@ public final class TrueConviction extends GameCard {
 
 	public TrueConviction() {
 		super("True Conviction", TYPES);
+	}
+
+	@Override
+	protected final void onEnter() {
 		Engine.registerBoardEffects(this, CardType.Creature, MODS);
 	}
 }

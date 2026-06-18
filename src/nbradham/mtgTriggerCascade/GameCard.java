@@ -26,6 +26,9 @@ public abstract class GameCard {
 		abilities.addAll(Arrays.asList(toAdd));
 	}
 
+	protected void onEnter() {
+	}
+
 	@Override
 	public String toString() {
 		return String.format("%s:{Types:%s, Abilities:%s}", name, types, abilities);

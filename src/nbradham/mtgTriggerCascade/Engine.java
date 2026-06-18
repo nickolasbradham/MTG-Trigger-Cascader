@@ -1,6 +1,7 @@
 package nbradham.mtgTriggerCascade;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import javax.swing.JOptionPane;
@@ -24,11 +25,14 @@ public final class Engine {
 
 	private static final void addKeywordsIfValid(GameCard card, CardType type, KeywordAbility[] keywords) {
 		if (card.isType(type))
-			card.addKeywordAbilities(keywords);
+			System.out.printf("%s is gaining %s from board state.%n", card, Arrays.toString(keywords));
+		card.addKeywordAbilities(keywords);
 	}
 
 	private final void addCard(GameCard card) {
+		System.out.printf("Adding %s to board...%n", card);
 		board.add(card);
+		card.onEnter();
 		keywords.values().forEach(v -> addKeywordsIfValid(card, (CardType) v[0], (KeywordAbility[]) v[1]));
 	}
 
@@ -49,7 +53,8 @@ public final class Engine {
 	}
 
 	public static final void registerBoardEffects(GameCard card, CardType type, KeywordAbility[] keywords) {
+		System.out.printf("%s is registering %s to %s cards on board...%n", card, Arrays.toString(keywords), type);
 		engine.keywords.put(card, new Object[] { type, keywords });
-		engine.board.forEach(c -> addKeywordsIfValid(card, type, keywords));
+		engine.board.forEach(c -> addKeywordsIfValid(c, type, keywords));
 	}
 }

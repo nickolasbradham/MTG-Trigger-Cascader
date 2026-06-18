@@ -6,11 +6,13 @@ import nbradham.mtgTriggerCascade.GameCard;
 import nbradham.mtgTriggerCascade.KeywordAbility;
 
 public final class TrueConviction extends GameCard {
-	
-	private static final KeywordAbility[] MODS = new KeywordAbility[]{KeywordAbility.DoubleStrike, KeywordAbility.Lifelink};
-	
+
+	private static final CardType[] TYPES = { CardType.Enchantment };
+	private static final KeywordAbility[] MODS = new KeywordAbility[] { KeywordAbility.DoubleStrike,
+			KeywordAbility.Lifelink };
+
 	public TrueConviction() {
-		super("True Conviction");
+		super("True Conviction", TYPES);
 		Engine.registerBoardEffects(this, CardType.Creature, MODS);
 	}
 }

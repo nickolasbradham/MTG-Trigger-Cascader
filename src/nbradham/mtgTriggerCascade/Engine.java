@@ -37,7 +37,7 @@ public final class Engine {
 		for (GameCard c : new GameCard[] { new TokenCard(new NykthosParagon(), CardType.Artifact),
 				new BrudicladTelchorEngineer(), new TrueConviction(), new ShardingSphinx(), new CadricSoulKindler() })
 			addCard(c);
-		System.out.printf("Board: %s%n", board);
+		System.out.printf("Board:%s%n", board);
 	}
 
 	public static void main(String[] args) {

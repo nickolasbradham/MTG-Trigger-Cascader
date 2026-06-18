@@ -3,14 +3,14 @@ package nbradham.mtgTriggerCascade.cards;
 import nbradham.mtgTriggerCascade.CardType;
 import nbradham.mtgTriggerCascade.Engine;
 import nbradham.mtgTriggerCascade.GameCard;
-import nbradham.mtgTriggerCascade.Modifier;
+import nbradham.mtgTriggerCascade.KeywordAbility;
 
 public final class TrueConviction extends GameCard {
 	
-	private static final Modifier[] MODS = new Modifier[]{Modifier.DoubleStrike, Modifier.Lifelink};
+	private static final KeywordAbility[] MODS = new KeywordAbility[]{KeywordAbility.DoubleStrike, KeywordAbility.Lifelink};
 	
 	public TrueConviction() {
-		super();
+		super("True Conviction");
 		Engine.registerBoardEffects(this, CardType.Creature, MODS);
 	}
 }

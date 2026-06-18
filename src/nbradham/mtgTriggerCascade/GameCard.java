@@ -1,17 +1,36 @@
 package nbradham.mtgTriggerCascade;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+
 public abstract class GameCard {
 
-	private CardType[] types;
+	private final String name;
+	protected final ArrayList<CardType> types = new ArrayList<>();
+	private final ArrayList<KeywordAbility> abilities = new ArrayList<>();
+	
+	protected GameCard(final String cardName) {
+		name=cardName;
+	}
+	
+	final String getName() {
+		return name;
+	}
 	
 	boolean isType(final CardType type) {
-		for (CardType t:types)
-			if(t==type)
-				return true;
-		return false;
+		return types.contains(type);
+	}
+	
+	protected final void addType(final CardType additionalType) {
+		types.add(additionalType);
 	}
 
-	final void addModifiers(Modifier[] modifiers) {
-		
+	final void addKeywordAbilities(final KeywordAbility[] toAdd) {
+		abilities.addAll(Arrays.asList(toAdd));
+	}
+	
+	@Override
+	public String toString() {
+		return String.format("%s[%s, %s]", getName(), types, abilities);
 	}
 }

@@ -39,6 +39,10 @@ public final class Engine {
 		System.out.printf("Adding %s to board...%n", card);
 		board.add(card);
 		card.onEnter();
+		addCardModifiers(card);
+	}
+
+	private final void addCardModifiers(final GameCard card) {
 		keywords.values().forEach(v -> addKeywordsIfValid(card, (CardType[]) v[0], (KeywordAbility[]) v[1]));
 	}
 
@@ -80,6 +84,7 @@ public final class Engine {
 			System.out.printf("Combat begin trigger: %s%n", c);
 			c.beginCombat();
 		});
+		board.forEach(c -> addCardModifiers(c));
 		System.out.printf("Board:%s%n", board);
 	}
 

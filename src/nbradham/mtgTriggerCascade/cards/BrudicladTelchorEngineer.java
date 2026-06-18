@@ -27,7 +27,7 @@ public final class BrudicladTelchorEngineer extends GameCard {
 			public void beginCombat() {
 				Engine.staticAddCard(new PhyrexianMyr());
 				GameCard token = Engine.mayChooseToken();
-				Engine.getCards().replaceAll(c -> c.isType(CardType.Token) && c != token ? new TokenCopy(c) : c);
+				Engine.getCards().replaceAll(c -> c.isType(CardType.Token) && c != token ? new TokenCopy(token) : c);
 			}
 		});
 	}

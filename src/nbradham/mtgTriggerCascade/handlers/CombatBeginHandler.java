@@ -2,12 +2,10 @@ package nbradham.mtgTriggerCascade.handlers;
 
 import nbradham.mtgTriggerCascade.GameEventHandler;
 
-public abstract class CombatBeginHandler implements GameEventHandler {
+public abstract class CombatBeginHandler extends GameEventHandler {
 
-	private final String string;
-
-	protected CombatBeginHandler(String abilityString) {
-		string = abilityString;
+	public CombatBeginHandler(final String text) {
+		super(text);
 	}
 
 	public abstract void beginCombat();

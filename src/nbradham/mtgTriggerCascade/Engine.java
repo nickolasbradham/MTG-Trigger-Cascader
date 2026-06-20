@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
 import javax.swing.JOptionPane;
@@ -13,7 +14,9 @@ import nbradham.mtgTriggerCascade.cards.CadricSoulKindler;
 import nbradham.mtgTriggerCascade.cards.NykthosParagon;
 import nbradham.mtgTriggerCascade.cards.ShardingSphinx;
 import nbradham.mtgTriggerCascade.cards.TrueConviction;
+import nbradham.mtgTriggerCascade.cards.TurnStartHandler;
 import nbradham.mtgTriggerCascade.handlers.CombatBeginHandler;
+import nbradham.mtgTriggerCascade.handlers.GainLifeHandler;
 
 public final class Engine {
 
@@ -22,6 +25,8 @@ public final class Engine {
 	private final ArrayList<GameCard> board = new ArrayList<>();
 	private final HashMap<GameCard, Object[]> keywords = new HashMap<>();
 	private final HashSet<CombatBeginHandler> combatHandlers = new HashSet<>();
+	private final HashSet<GainLifeHandler> gainLifeHandlers = new HashSet<>();
+	private final HashSet<TurnStartHandler> turnStartHandlers = new HashSet<>();
 
 	private Engine() {
 		engine = this;
@@ -59,6 +64,20 @@ public final class Engine {
 		System.out.printf("Registering: %s%n", handler);
 		if (handler instanceof CombatBeginHandler)
 			engine.combatHandlers.add((CombatBeginHandler) handler);
+		else if (handler instanceof GainLifeHandler)
+			engine.gainLifeHandlers.add((GainLifeHandler) handler);
+		else if (handler instanceof TurnStartHandler)
+			engine.turnStartHandlers.add((TurnStartHandler) handler);
+	}
+
+	public static final void unregisterEventHandler(final GameEventHandler handler) {
+		System.out.printf("Unregistering: %s%n", handler);
+		if (handler instanceof CombatBeginHandler)
+			engine.combatHandlers.remove(handler);
+		else if (handler instanceof GainLifeHandler)
+			engine.gainLifeHandlers.remove(handler);
+		else if (handler instanceof TurnStartHandler)
+			engine.turnStartHandlers.remove(handler);
 	}
 
 	public static final void staticAddCard(final GameCard card) {
@@ -95,7 +114,12 @@ public final class Engine {
 		for (GameCard c : new GameCard[] { new TokenCopy(new NykthosParagon(), CardType.Artifact),
 				new BrudicladTelchorEngineer(), new TrueConviction(), new ShardingSphinx(), new CadricSoulKindler() })
 			addCard(c);
-		System.out.printf("Board ready:%s%nCombat begin.%n", board);
+		System.out.printf("Board ready:%s%nTurn start.%n", board);
+		turnStartHandlers.forEach(c -> {
+			System.out.printf("Turn start trigger: %s%n", c);
+			c.onStart();
+		});
+		System.out.printf("Board:%s%nCombat start.%n", board);
 		combatHandlers.forEach(c -> {
 			System.out.printf("Combat begin trigger: %s%n", c);
 			c.beginCombat();
@@ -109,5 +133,14 @@ public final class Engine {
 			return;
 		}
 		new Engine().start();
+	}
+
+	public static final boolean mayDoNykthosBuff() {
+		// TODO: Do better logic.
+		return true;
+	}
+
+	public static final void forEach(final Consumer<GameCard> consumer) {
+		Engine.engine.board.forEach(consumer);
 	}
 }

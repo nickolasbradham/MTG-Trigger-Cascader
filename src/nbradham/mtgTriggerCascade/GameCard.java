@@ -8,6 +8,7 @@ public abstract class GameCard {
 	private final String name;
 	protected final HashSet<CardType> types = new HashSet<>();
 	protected final HashSet<KeywordAbility> abilities = new HashSet<>();
+	private byte oneOnes = 0;
 
 	protected GameCard(final String cardName, final CardType[] cardTypes) {
 		name = cardName;
@@ -27,6 +28,10 @@ public abstract class GameCard {
 	}
 
 	protected void onEnter() {
+	}
+
+	public final void addOneOnes(byte toAdd) {
+		oneOnes += toAdd;
 	}
 
 	@Override

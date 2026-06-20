@@ -24,7 +24,7 @@ public final class BrudicladTelchorEngineer extends GameCard {
 		Engine.registerEventHandler(new CombatBeginHandler(
 				"At the beginning of combat on your turn, create a 2/1 blue Phyrexian Myr artifact creature token. Then you may choose a token you control. If you do, each other token you control becomes a copy of that token.") {
 			@Override
-			public void beginCombat() {
+			public final void beginCombat() {
 				Engine.staticAddCard(new PhyrexianMyr());
 				GameCard token = Engine.mayChooseToken();
 				Engine.replaceAll(c -> {

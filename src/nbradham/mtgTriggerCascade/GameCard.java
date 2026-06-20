@@ -3,7 +3,17 @@ package nbradham.mtgTriggerCascade;
 import java.util.Arrays;
 import java.util.HashSet;
 
+import nbradham.mtgTriggerCascade.handlers.TurnStartHandler;
+
 public abstract class GameCard {
+
+	private final TurnStartHandler SUMMON_SICK_REMOVER = new TurnStartHandler() {
+
+		@Override
+		public void onStart() {
+			abilities.remove(KeywordAbility.Summoning_Sickness);
+		}
+	};
 
 	private final String name;
 	protected final HashSet<CardType> types = new HashSet<>();
@@ -28,6 +38,10 @@ public abstract class GameCard {
 	}
 
 	protected void onEnter() {
+		if (types.contains(CardType.Creature)) {
+			abilities.add(KeywordAbility.Summoning_Sickness);
+			Engine.registerEventHandler(SUMMON_SICK_REMOVER);
+		}
 	}
 
 	public final void addOneOnes(byte toAdd) {

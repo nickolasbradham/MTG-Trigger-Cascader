@@ -14,9 +14,10 @@ import nbradham.mtgTriggerCascade.cards.CadricSoulKindler;
 import nbradham.mtgTriggerCascade.cards.NykthosParagon;
 import nbradham.mtgTriggerCascade.cards.ShardingSphinx;
 import nbradham.mtgTriggerCascade.cards.TrueConviction;
-import nbradham.mtgTriggerCascade.cards.TurnStartHandler;
 import nbradham.mtgTriggerCascade.handlers.CombatBeginHandler;
 import nbradham.mtgTriggerCascade.handlers.GainLifeHandler;
+import nbradham.mtgTriggerCascade.handlers.PlayerCombatDamageHandler;
+import nbradham.mtgTriggerCascade.handlers.TurnStartHandler;
 
 public final class Engine {
 
@@ -27,18 +28,25 @@ public final class Engine {
 	private final HashSet<CombatBeginHandler> combatHandlers = new HashSet<>();
 	private final HashSet<GainLifeHandler> gainLifeHandlers = new HashSet<>();
 	private final HashSet<TurnStartHandler> turnStartHandlers = new HashSet<>();
+	private final HashSet<PlayerCombatDamageHandler> playerDamageHandlers = new HashSet<>();
 
 	private Engine() {
 		engine = this;
 	}
 
-	private static final void addKeywordsIfValid(final GameCard card, final CardType[] types,
-			final KeywordAbility[] keywords) {
+	public static final boolean isCardAllTypes(final GameCard card, final CardType[] types) {
 		for (CardType t : types)
 			if (!card.isType(t))
-				return;
-		System.out.printf("%s is gaining %s from board state.%n", card, Arrays.toString(keywords));
-		card.addKeywordAbilities(keywords);
+				return false;
+		return true;
+	}
+
+	private static final void addKeywordsIfValid(final GameCard card, final CardType[] types,
+			final KeywordAbility[] keywords) {
+		if (isCardAllTypes(card, types)) {
+			System.out.printf("%s is gaining %s from board state.%n", card, Arrays.toString(keywords));
+			card.addKeywordAbilities(keywords);
+		}
 	}
 
 	private final void addCard(final GameCard card) {
@@ -68,6 +76,8 @@ public final class Engine {
 			engine.gainLifeHandlers.add((GainLifeHandler) handler);
 		else if (handler instanceof TurnStartHandler)
 			engine.turnStartHandlers.add((TurnStartHandler) handler);
+		else if (handler instanceof PlayerCombatDamageHandler)
+			engine.playerDamageHandlers.add((PlayerCombatDamageHandler) handler);
 	}
 
 	public static final void unregisterEventHandler(final GameEventHandler handler) {
@@ -78,6 +88,8 @@ public final class Engine {
 			engine.gainLifeHandlers.remove(handler);
 		else if (handler instanceof TurnStartHandler)
 			engine.turnStartHandlers.remove(handler);
+		else if (handler instanceof PlayerCombatDamageHandler)
+			engine.playerDamageHandlers.remove(handler);
 	}
 
 	public static final void staticAddCard(final GameCard card) {
@@ -135,12 +147,17 @@ public final class Engine {
 		new Engine().start();
 	}
 
-	public static final boolean mayDoNykthosBuff() {
+	public static final boolean mayDoNykthosBuff(byte countersToAdd) {
 		// TODO: Do better logic.
 		return true;
 	}
 
 	public static final void forEach(final Consumer<GameCard> consumer) {
 		Engine.engine.board.forEach(consumer);
+	}
+
+	// More of a formality.
+	public static final boolean mayDoShardingAbility() {
+		return true;
 	}
 }

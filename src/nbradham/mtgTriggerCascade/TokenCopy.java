@@ -17,6 +17,7 @@ public final class TokenCopy extends GameCard {
 
 	@Override
 	public final void onEnter() {
+		super.onEnter();
 		copy.onEnter();
 	}
 }

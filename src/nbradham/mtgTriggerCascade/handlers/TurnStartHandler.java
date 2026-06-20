@@ -1,4 +1,4 @@
-package nbradham.mtgTriggerCascade.cards;
+package nbradham.mtgTriggerCascade.handlers;
 
 import nbradham.mtgTriggerCascade.GameEventHandler;
 

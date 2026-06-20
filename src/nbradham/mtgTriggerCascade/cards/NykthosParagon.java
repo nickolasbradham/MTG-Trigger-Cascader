@@ -4,6 +4,7 @@ import nbradham.mtgTriggerCascade.CardType;
 import nbradham.mtgTriggerCascade.Engine;
 import nbradham.mtgTriggerCascade.GameCard;
 import nbradham.mtgTriggerCascade.handlers.GainLifeHandler;
+import nbradham.mtgTriggerCascade.handlers.TurnStartHandler;
 
 public final class NykthosParagon extends GameCard {
 
@@ -20,7 +21,7 @@ public final class NykthosParagon extends GameCard {
 			"Whenever you gain life, you may put that many +1/+1 counters on each creature you control. Do this only once each turn.") {
 		@Override
 		public final void onLifeGain(final byte gainedLife) {
-			if (Engine.mayDoNykthosBuff()) {
+			if (Engine.mayDoNykthosBuff(gainedLife)) {
 				Engine.forEach(c -> {
 					if (c.isType(CardType.Creature))
 						c.addOneOnes(gainedLife);
@@ -37,6 +38,7 @@ public final class NykthosParagon extends GameCard {
 
 	@Override
 	protected final void onEnter() {
+		super.onEnter();
 		Engine.registerEventHandler(GAIN_LIFE_HANDLER);
 	}
 }

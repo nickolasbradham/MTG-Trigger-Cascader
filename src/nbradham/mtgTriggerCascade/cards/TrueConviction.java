@@ -17,6 +17,7 @@ public final class TrueConviction extends GameCard {
 
 	@Override
 	protected final void onEnter() {
+		super.onEnter();
 		Engine.registerBoardEffects(this, COND_TYPES, MODS);
 	}
 }

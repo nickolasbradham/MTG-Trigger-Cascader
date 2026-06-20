@@ -29,6 +29,7 @@ public final class Engine {
 	private final HashSet<GainLifeHandler> gainLifeHandlers = new HashSet<>();
 	private final HashSet<TurnStartHandler> turnStartHandlers = new HashSet<>();
 	private final HashSet<PlayerCombatDamageHandler> playerDamageHandlers = new HashSet<>();
+	private final HashSet<GameEventHandler> unregisterQueue = new HashSet<>();
 
 	private Engine() {
 		engine = this;
@@ -44,13 +45,13 @@ public final class Engine {
 	private static final void addKeywordsIfValid(final GameCard card, final CardType[] types,
 			final KeywordAbility[] keywords) {
 		if (isCardAllTypes(card, types)) {
-			System.out.printf("%s is gaining %s from board state.%n", card, Arrays.toString(keywords));
+			System.out.printf("  %s is gaining %s from board state.%n", card, Arrays.toString(keywords));
 			card.addKeywordAbilities(keywords);
 		}
 	}
 
 	private final void addCard(final GameCard card) {
-		System.out.printf("Adding %s to board...%n", card);
+		System.out.printf("  Adding %s to board...%n", card);
 		board.add(card);
 		card.onEnter();
 		addCardModifiers(card);
@@ -62,14 +63,14 @@ public final class Engine {
 
 	public static final void registerBoardEffects(final GameCard card, final CardType[] types,
 			final KeywordAbility[] keywords) {
-		System.out.printf("%s is registering %s to %s cards on board...%n", card, Arrays.toString(keywords),
+		System.out.printf("  %s is registering %s to %s cards on board...%n", card, Arrays.toString(keywords),
 				Arrays.toString(types));
 		engine.keywords.put(card, new Object[] { types, keywords });
 		engine.board.forEach(c -> addKeywordsIfValid(c, types, keywords));
 	}
 
 	public static final void registerEventHandler(final GameEventHandler handler) {
-		System.out.printf("Registering: %s%n", handler);
+		System.out.printf("  Registering: %s%n", handler);
 		if (handler instanceof CombatBeginHandler)
 			engine.combatHandlers.add((CombatBeginHandler) handler);
 		else if (handler instanceof GainLifeHandler)
@@ -81,15 +82,8 @@ public final class Engine {
 	}
 
 	public static final void unregisterEventHandler(final GameEventHandler handler) {
-		System.out.printf("Unregistering: %s%n", handler);
-		if (handler instanceof CombatBeginHandler)
-			engine.combatHandlers.remove(handler);
-		else if (handler instanceof GainLifeHandler)
-			engine.gainLifeHandlers.remove(handler);
-		else if (handler instanceof TurnStartHandler)
-			engine.turnStartHandlers.remove(handler);
-		else if (handler instanceof PlayerCombatDamageHandler)
-			engine.playerDamageHandlers.remove(handler);
+		System.out.printf("  Adding %s to unregister queue...%n", handler);
+		engine.unregisterQueue.add(handler);
 	}
 
 	public static final void staticAddCard(final GameCard card) {
@@ -126,17 +120,49 @@ public final class Engine {
 		for (GameCard c : new GameCard[] { new TokenCopy(new NykthosParagon(), CardType.Artifact),
 				new BrudicladTelchorEngineer(), new TrueConviction(), new ShardingSphinx(), new CadricSoulKindler() })
 			addCard(c);
-		System.out.printf("Board ready:%s%nTurn start.%n", board);
+		System.out.printf("Turn start. Board state(%d): %s%n", board.size(), board);
 		turnStartHandlers.forEach(c -> {
-			System.out.printf("Turn start trigger: %s%n", c);
-			c.onStart();
+			if (!unregisterQueue.contains(c)) {
+				System.out.printf("  Turn start trigger: %s%n", c);
+				c.onStart();
+			}
 		});
-		System.out.printf("Board:%s%nCombat start.%n", board);
+		unregisterHandlers();
+		System.out.printf("Combat start. Board state(%d): %s%n", board.size(), board);
 		combatHandlers.forEach(c -> {
-			System.out.printf("Combat begin trigger: %s%n", c);
-			c.beginCombat();
+			if (!unregisterQueue.contains(c)) {
+				System.out.printf("  Combat begin trigger: %s%n", c);
+				c.beginCombat();
+			}
 		});
-		System.out.printf("Board:%s%n", board);
+		unregisterHandlers();
+		System.out.printf("  Declare attackers. Board state(%d): %s%n", board.size(), board);
+		final ArrayList<GameCard> attackers = new ArrayList<>();
+		board.forEach(c -> {
+			if (c.isType(CardType.Creature) && c.isUntapped()
+					&& (!c.hasAbility(KeywordAbility.Summoning_Sickness) || c.hasAbility(KeywordAbility.Haste))) {
+				if (!c.hasAbility(KeywordAbility.Vigilance))
+					c.tap();
+				attackers.add(c);
+			}
+		});
+		System.out.printf("  Attackers(%d):%s%n  Attacking...%n", attackers.size(), attackers);
+	}
+
+	private final void unregisterHandlers() {
+		System.out.printf("Unregister queue cleanup(%d)...%n", unregisterQueue.size());
+		for (GameEventHandler handler : unregisterQueue.toArray(new GameEventHandler[0])) {
+			System.out.printf("  Unregistering: %s%n", handler);
+			unregisterQueue.remove(handler);
+			if (handler instanceof CombatBeginHandler)
+				combatHandlers.remove(handler);
+			else if (handler instanceof GainLifeHandler)
+				gainLifeHandlers.remove(handler);
+			else if (handler instanceof TurnStartHandler)
+				turnStartHandlers.remove(handler);
+			else if (handler instanceof PlayerCombatDamageHandler)
+				playerDamageHandlers.remove(handler);
+		}
 	}
 
 	public static void main(final String[] args) {
@@ -147,7 +173,7 @@ public final class Engine {
 		new Engine().start();
 	}
 
-	public static final boolean mayDoNykthosBuff(byte countersToAdd) {
+	public static final boolean mayDoNykthosBuff(final byte countersToAdd) {
 		// TODO: Do better logic.
 		return true;
 	}

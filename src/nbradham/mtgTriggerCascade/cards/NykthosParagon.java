@@ -10,7 +10,8 @@ public final class NykthosParagon extends GameCard {
 
 	private static final CardType[] TYPES = { CardType.Enchantment, CardType.Creature, CardType.Human,
 			CardType.Soldier };
-	private static final TurnStartHandler TURN_START_HANDLER = new TurnStartHandler() {
+	private static final TurnStartHandler TURN_START_HANDLER = new TurnStartHandler(
+			"(Nykthos Paragon ability enabler)") {
 		@Override
 		public final void onStart() {
 			Engine.unregisterEventHandler(this);

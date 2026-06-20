@@ -4,6 +4,10 @@ import nbradham.mtgTriggerCascade.GameEventHandler;
 
 public abstract class TurnStartHandler extends GameEventHandler {
 
+	public TurnStartHandler(final String text) {
+		super(text);
+	}
+
 	public abstract void onStart();
 
 	@Override

@@ -100,6 +100,10 @@ public final class Engine {
 		return engine.board;
 	}
 
+	/*
+	 * Yes I know this is a terrible way to handle board-wide status effects. Too
+	 * bad! I realized this too late.
+	 */
 	private final void privReplaceAll(final UnaryOperator<GameCard> operator) {
 		ArrayList<GameCard> field = Engine.getCards();
 		int end = field.size();

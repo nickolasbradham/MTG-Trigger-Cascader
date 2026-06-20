@@ -15,26 +15,27 @@ public final class TokenCopy extends GameCard {
 		types.add(CardType.Token);
 	}
 
-	
-	//TODO: Copy types.
 	public static final TokenCopy createTokenCopy(GameCard copyOf, CardType additionalType) {
-		if (copyOf instanceof TokenCopy)
-			return new TokenCopy(((TokenCopy) copyOf).copy, additionalType);
-		else
-			return new TokenCopy(copyOf, additionalType);
+		return copyExtras(copyOf, new TokenCopy(getBaseCard(copyOf), additionalType));
 	}
 
-	//TODO: Copy types.
 	public static final TokenCopy createTokenCopy(GameCard copyOf) {
-		if (copyOf instanceof TokenCopy)
-			return new TokenCopy(((TokenCopy) copyOf).copy);
-		else
-			return new TokenCopy(copyOf);
+		return copyExtras(copyOf, new TokenCopy(getBaseCard(copyOf)));
 	}
 
 	@Override
 	public final void onEnter() {
 		super.onEnter();
 		copy.onEnter();
+	}
+
+	private static final GameCard getBaseCard(final GameCard card) {
+		return card instanceof TokenCopy ? ((TokenCopy) card).copy : card;
+	}
+
+	private static final TokenCopy copyExtras(final GameCard src, final TokenCopy dest) {
+		dest.types.addAll(src.types);
+		dest.abilities.addAll(src.abilities); // Yes I know that this will copy summoning sickness status. Too bad!
+		return dest;
 	}
 }

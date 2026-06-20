@@ -117,7 +117,7 @@ public final class Engine {
 
 	private final void start() {
 		System.out.println("Setting up board state...");
-		for (GameCard c : new GameCard[] { new TokenCopy(new NykthosParagon(), CardType.Artifact),
+		for (GameCard c : new GameCard[] { TokenCopy.createTokenCopy(new NykthosParagon(), CardType.Artifact),
 				new BrudicladTelchorEngineer(), new TrueConviction(), new ShardingSphinx(), new CadricSoulKindler() })
 			addCard(c);
 		System.out.printf("Turn start. Board state(%d): %s%n", board.size(), board);

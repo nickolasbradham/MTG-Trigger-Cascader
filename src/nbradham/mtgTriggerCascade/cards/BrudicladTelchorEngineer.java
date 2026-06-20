@@ -30,7 +30,7 @@ public final class BrudicladTelchorEngineer extends GameCard {
 				GameCard token = Engine.mayChooseToken();
 				Engine.replaceAll(c -> {
 					if (c.isType(CardType.Token) && c != token)
-						return new TokenCopy(token);
+						return TokenCopy.createTokenCopy(token);
 					else
 						return c;
 				});

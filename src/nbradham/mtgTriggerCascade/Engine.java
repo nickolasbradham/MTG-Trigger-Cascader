@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.function.UnaryOperator;
 
 import javax.swing.JOptionPane;
 
@@ -74,6 +75,21 @@ public final class Engine {
 		return engine.board;
 	}
 
+	private final void privReplaceAll(final UnaryOperator<GameCard> operator) {
+		ArrayList<GameCard> field = Engine.getCards();
+		int end = field.size();
+		for (byte i = 0; i < end; ++i) {
+			GameCard orig = field.get(i), after = operator.apply(orig);
+			field.set(i, after);
+			if (orig != after)
+				addCardModifiers(after);
+		}
+	}
+
+	public static final void replaceAll(final UnaryOperator<GameCard> operator) {
+		Engine.engine.privReplaceAll(operator);
+	}
+
 	private final void start() {
 		System.out.println("Setting up board state...");
 		for (GameCard c : new GameCard[] { new TokenCopy(new NykthosParagon(), CardType.Artifact),
@@ -84,7 +100,6 @@ public final class Engine {
 			System.out.printf("Combat begin trigger: %s%n", c);
 			c.beginCombat();
 		});
-		board.forEach(c -> addCardModifiers(c));
 		System.out.printf("Board:%s%n", board);
 	}
 

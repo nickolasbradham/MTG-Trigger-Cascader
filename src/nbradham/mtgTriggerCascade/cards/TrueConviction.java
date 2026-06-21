@@ -16,8 +16,14 @@ public final class TrueConviction extends GameCard {
 	}
 
 	@Override
-	protected final void onEnter() {
-		super.onEnter();
+	protected final void registerBattlefieldHandlers() {
+		super.registerBattlefieldHandlers();
 		Engine.registerBoardEffects(this, COND_TYPES, MODS);
+	}
+
+	@Override
+	protected final void unregisterBattlefieldHandlers() {
+		super.unregisterBattlefieldHandlers();
+		Engine.unregisterBoardEffects(this);
 	}
 }

@@ -23,19 +23,31 @@ public final class TokenCopy extends CreatureCard {
 		return copyExtras(copyOf, new TokenCopy(getBaseCard(copyOf)));
 	}
 
-	@Override
-	public final void onEnter() {
-		super.onEnter();
-		copy.onEnter();
-	}
-
 	private static final CreatureCard getBaseCard(final CreatureCard card) {
 		return card instanceof TokenCopy ? ((TokenCopy) card).copy : card;
 	}
 
 	private static final TokenCopy copyExtras(final CreatureCard src, final TokenCopy dest) {
 		dest.types.addAll(src.types);
-		dest.abilities.addAll(src.abilities); // Yes I know that this will copy summoning sickness status. Too bad!
+		dest.abilities.addAll(src.abilities);
 		return dest;
+	}
+
+	@Override
+	public final void onEnter() {
+		super.onEnter();
+		copy.onEnter();
+	}
+
+	@Override
+	protected void registerBattlefieldHandlers() {
+		super.registerBattlefieldHandlers();
+		copy.registerBattlefieldHandlers();
+	}
+
+	@Override
+	protected void unregisterBattlefieldHandlers() {
+		super.unregisterBattlefieldHandlers();
+		copy.unregisterBattlefieldHandlers();
 	}
 }

@@ -27,8 +27,14 @@ public final class ShardingSphinx extends CreatureCard {
 	}
 
 	@Override
-	public final void onEnter() {
-		super.onEnter();
+	public final void registerBattlefieldHandlers() {
+		super.registerBattlefieldHandlers();
 		Engine.registerEventHandler(PLAYER_DAMAGE_HANDLER);
+	}
+
+	@Override
+	public final void unregisterBattlefieldHandlers() {
+		super.unregisterBattlefieldHandlers();
+		Engine.unregisterEventHandler(PLAYER_DAMAGE_HANDLER);
 	}
 }

@@ -14,8 +14,8 @@ public final class NykthosParagon extends CreatureCard {
 		@Override
 		public final void onStart() {
 			canBuff = true;
-			Engine.unregisterEventHandler(this);
-			Engine.registerEventHandler(GAIN_LIFE_HANDLER);
+			//Engine.unregisterEventHandler(this);
+			//Engine.registerEventHandler(GAIN_LIFE_HANDLER);
 		}
 	};
 
@@ -27,11 +27,13 @@ public final class NykthosParagon extends CreatureCard {
 			if (canBuff && Engine.mayDoNykthosBuff(gainedLife)) {
 				canBuff = false;
 				Engine.forEach(c -> {
-					if (c.isType(CardType.Creature))
+					if (c.isType(CardType.Creature)) {
+						System.out.printf("      %dx +1/+1s -> %s.%n", gainedLife, c);
 						((CreatureCard) c).addOneOnes(gainedLife);
+					}
 				});
-				Engine.unregisterEventHandler(this);
-				Engine.registerEventHandler(TURN_START_HANDLER);
+				//Engine.unregisterEventHandler(this);
+				//Engine.registerEventHandler(TURN_START_HANDLER);
 			}
 		}
 	};
@@ -41,8 +43,16 @@ public final class NykthosParagon extends CreatureCard {
 	}
 
 	@Override
-	protected final void onEnter() {
-		super.onEnter();
+	protected final void registerBattlefieldHandlers() {
+		super.registerBattlefieldHandlers();
 		Engine.registerEventHandler(GAIN_LIFE_HANDLER);
+		Engine.registerEventHandler(TURN_START_HANDLER);
+	}
+
+	@Override
+	protected final void unregisterBattlefieldHandlers() {
+		super.unregisterBattlefieldHandlers();
+		Engine.unregisterEventHandler(GAIN_LIFE_HANDLER);
+		Engine.unregisterEventHandler(TURN_START_HANDLER);
 	}
 }

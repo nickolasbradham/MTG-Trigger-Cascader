@@ -51,4 +51,10 @@ public abstract class GameCard {
 
 	protected void onEnter() {
 	}
+
+	protected void registerBattlefieldHandlers() {
+	}
+
+	protected void unregisterBattlefieldHandlers() {
+	}
 }

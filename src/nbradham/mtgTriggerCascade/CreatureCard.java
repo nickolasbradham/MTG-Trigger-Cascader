@@ -10,7 +10,7 @@ public abstract class CreatureCard extends GameCard {
 	private final TurnStartHandler summonSickRemover;
 	protected final HashSet<KeywordAbility> abilities = new HashSet<>();
 	protected final int pow;
-	private short oneOnes = 0;
+	public short oneOnes = 0;
 	private boolean noSummoningSickness;
 
 	protected CreatureCard(String cardName, CardType[] cardTypes, final int power) {
@@ -31,12 +31,19 @@ public abstract class CreatureCard extends GameCard {
 	}
 
 	@Override
-	protected void onEnter() {
-		super.onEnter();
+	protected void registerBattlefieldHandlers() {
+		super.registerBattlefieldHandlers();
 		if (types.contains(CardType.Creature)) {
 			noSummoningSickness = false;
 			Engine.registerEventHandler(summonSickRemover);
 		}
+	}
+
+	@Override
+	protected void unregisterBattlefieldHandlers() {
+		super.unregisterBattlefieldHandlers();
+		if (types.contains(CardType.Creature))
+			Engine.unregisterEventHandler(summonSickRemover);
 	}
 
 	public final void addOneOnes(final int gainedLife) {

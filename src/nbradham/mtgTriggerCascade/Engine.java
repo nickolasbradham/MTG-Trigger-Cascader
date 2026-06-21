@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.PriorityQueue;
+import java.util.Scanner;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
@@ -60,6 +61,7 @@ public final class Engine {
 		System.out.printf("  Adding %s to board...%n", card);
 		board.add(card);
 		card.onEnter();
+		card.registerBattlefieldHandlers();
 		addCardModifiers(card);
 	}
 
@@ -92,6 +94,26 @@ public final class Engine {
 		engine.unregisterQueue.add(handler);
 	}
 
+	private final void unregisterHandlers() {
+		System.out.printf("Unregister pool cleanup(%d)...%n", unregisterQueue.size());
+		for (GameEventHandler handler : unregisterQueue.toArray(new GameEventHandler[0])) {
+			System.out.printf("  Unregistering: %s%n", handler);
+			unregisterQueue.remove(handler);
+			if (handler instanceof CombatBeginHandler)
+				combatHandlers.remove(handler);
+			else if (handler instanceof GainLifeHandler)
+				gainLifeHandlers.remove(handler);
+			else if (handler instanceof TurnStartHandler)
+				turnStartHandlers.remove(handler);
+			else if (handler instanceof PlayerCombatDamageHandler)
+				playerDamageHandlers.remove(handler);
+		}
+	}
+
+	public static final void unregisterBoardEffects(final GameCard card) {
+		// TODO maybe someday.
+	}
+
 	public static final void staticAddCard(final GameCard card) {
 		engine.addCard(card);
 	}
@@ -115,30 +137,17 @@ public final class Engine {
 		int end = field.size();
 		for (byte i = 0; i < end; ++i) {
 			GameCard orig = field.get(i), after = operator.apply(orig);
-			field.set(i, after);
-			if (orig != after)
+			if (orig != after) {
+				orig.unregisterBattlefieldHandlers();
+				field.set(i, after);
 				addCardModifiers((CreatureCard) after);
+				after.registerBattlefieldHandlers();
+			}
 		}
 	}
 
 	public static final void replaceAll(final UnaryOperator<GameCard> operator) {
 		Engine.engine.privReplaceAll(operator);
-	}
-
-	private final void unregisterHandlers() {
-		System.out.printf("Unregister pool cleanup(%d)...%n", unregisterQueue.size());
-		for (GameEventHandler handler : unregisterQueue.toArray(new GameEventHandler[0])) {
-			System.out.printf("  Unregistering: %s%n", handler);
-			unregisterQueue.remove(handler);
-			if (handler instanceof CombatBeginHandler)
-				combatHandlers.remove(handler);
-			else if (handler instanceof GainLifeHandler)
-				gainLifeHandlers.remove(handler);
-			else if (handler instanceof TurnStartHandler)
-				turnStartHandlers.remove(handler);
-			else if (handler instanceof PlayerCombatDamageHandler)
-				playerDamageHandlers.remove(handler);
-		}
 	}
 
 	public static final boolean mayDoNykthosBuff(final int gainedLife) {
@@ -183,6 +192,7 @@ public final class Engine {
 			else if (ev instanceof LifeGainedEvent)
 				gainLifeHandlers.forEach(h -> h.onLifeGain(((LifeGainedEvent) ev).amount()));
 		}
+		unregisterHandlers();
 	}
 
 	private final void start() {
@@ -190,48 +200,58 @@ public final class Engine {
 		for (GameCard c : new GameCard[] { TokenCopy.createTokenCopy(new NykthosParagon(), CardType.Artifact),
 				new BrudicladTelchorEngineer(), new TrueConviction(), new ShardingSphinx(), new CadricSoulKindler() })
 			addCard(c);
-		System.out.printf("Turn start. Board state(%d): %s%n", board.size(), board);
-		turnStartHandlers.forEach(c -> {
-			if (!unregisterQueue.contains(c)) {
-				System.out.printf("  Turn start trigger: %s%n", c);
-				c.onStart();
-			}
-		});
-		unregisterHandlers();
-		System.out.printf("Combat start. Board state(%d): %s%n", board.size(), board);
-		combatHandlers.forEach(c -> {
-			if (!unregisterQueue.contains(c)) {
-				System.out.printf("  Combat begin trigger: %s%n", c);
-				c.beginCombat();
-			}
-		});
-		unregisterHandlers();
-		System.out.printf("  Declare attackers. Board state(%d): %s%n", board.size(), board);
-		final ArrayList<CreatureCard> attackers = new ArrayList<>();
-		board.forEach(c -> {
-			if (c.isType(CardType.Creature) && c.isUntapped() && (((CreatureCard) c).noSummoningSickness()
-					|| ((CreatureCard) c).hasAbility(KeywordAbility.Haste))) {
-				if (!((CreatureCard) c).hasAbility(KeywordAbility.Vigilance))
-					c.tap();
-				attackers.add((CreatureCard) c);
-			}
-		});
-		System.out.printf("  Attackers(%d):%s%n  Attacking (First Strike)...%n", attackers.size(), attackers);
-		attackers.forEach(c -> {
-			if (c.hasAbility(KeywordAbility.Double_Strike) || c.hasAbility(KeywordAbility.First_Strike)) {
+		Scanner scan = new Scanner(System.in);
+		do {
+			System.out.printf("Turn start. Board state(%d): %s%n", board.size(), board);
+			scan.nextLine();
+			turnStartHandlers.forEach(c -> {
+				if (!unregisterQueue.contains(c)) {
+					System.out.printf("  Turn start trigger: %s%n", c);
+					c.onStart();
+				}
+			});
+			unregisterHandlers();
+			System.out.printf("Combat start. Board state(%d): %s%n", board.size(), board);
+			scan.nextLine();
+			combatHandlers.forEach(c -> {
+				if (!unregisterQueue.contains(c)) {
+					System.out.printf("  Combat begin trigger: %s%n", c);
+					c.beginCombat();
+				}
+			});
+			unregisterHandlers();
+			System.out.printf("  Declare attackers. Board state(%d): %s%n", board.size(), board);
+			scan.nextLine();
+			final ArrayList<CreatureCard> attackers = new ArrayList<>();
+			board.forEach(c -> {
+				if (c.isType(CardType.Creature) && c.isUntapped() && (((CreatureCard) c).noSummoningSickness()
+						|| ((CreatureCard) c).hasAbility(KeywordAbility.Haste))) {
+					if (!((CreatureCard) c).hasAbility(KeywordAbility.Vigilance))
+						c.tap();
+					attackers.add((CreatureCard) c);
+				}
+			});
+			unregisterHandlers();
+			System.out.printf("  Attackers(%d):%s%n  Attacking (First Strike)...%n", attackers.size(), attackers);
+			scan.nextLine();
+			attackers.forEach(c -> {
+				if (c.hasAbility(KeywordAbility.Double_Strike) || c.hasAbility(KeywordAbility.First_Strike)) {
+					System.out.printf("    Attack: %s%n", c);
+					c.attack();
+				}
+			});
+			proccessEvents();
+			System.out.printf("  Attacking (Normal)...%n", attackers.size(), attackers);
+			scan.nextLine();
+			attackers.forEach(c -> {
 				System.out.printf("    Attack: %s%n", c);
 				c.attack();
-			}
-		});
-		proccessEvents();
-		System.out.printf("  Attacking (Normal)...%n", attackers.size(), attackers);
-		attackers.forEach(c -> {
-			System.out.printf("    Attack: %s%n", c);
-			c.attack();
-		});
-		proccessEvents();
-		System.out.printf("Life Gained: %d  Damage Dealt: %d  Board(%d): %s%n", lifeGained, oppDamage, board.size(),
-				board);
+			});
+			proccessEvents();
+			System.out.printf("Turn end. Life Gained: %d  Damage Dealt: %d  Board(%d): %s%nType \"e\" to exit.",
+					lifeGained, oppDamage, board.size(), board);
+		} while (!scan.nextLine().equals("e"));
+		scan.close();
 	}
 
 	public static void main(final String[] args) {

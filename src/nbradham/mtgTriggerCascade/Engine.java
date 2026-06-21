@@ -209,9 +209,8 @@ public final class Engine {
 		System.out.printf("  Declare attackers. Board state(%d): %s%n", board.size(), board);
 		final ArrayList<CreatureCard> attackers = new ArrayList<>();
 		board.forEach(c -> {
-			if (c.isType(CardType.Creature) && c.isUntapped()
-					&& (!((CreatureCard) c).hasAbility(KeywordAbility.Summoning_Sickness)
-							|| ((CreatureCard) c).hasAbility(KeywordAbility.Haste))) {
+			if (c.isType(CardType.Creature) && c.isUntapped() && (((CreatureCard) c).noSummoningSickness()
+					|| ((CreatureCard) c).hasAbility(KeywordAbility.Haste))) {
 				if (!((CreatureCard) c).hasAbility(KeywordAbility.Vigilance))
 					c.tap();
 				attackers.add((CreatureCard) c);

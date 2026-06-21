@@ -11,6 +11,7 @@ public abstract class CreatureCard extends GameCard {
 	protected final HashSet<KeywordAbility> abilities = new HashSet<>();
 	protected final int pow;
 	private short oneOnes = 0;
+	private boolean noSummoningSickness;
 
 	protected CreatureCard(String cardName, CardType[] cardTypes, final int power) {
 		super(cardName, cardTypes);
@@ -20,7 +21,7 @@ public abstract class CreatureCard extends GameCard {
 			@Override
 			public final void onStart() {
 				Engine.unregisterEventHandler(this);
-				abilities.remove(KeywordAbility.Summoning_Sickness);
+				noSummoningSickness = true;
 			}
 		};
 	}
@@ -33,7 +34,7 @@ public abstract class CreatureCard extends GameCard {
 	protected void onEnter() {
 		super.onEnter();
 		if (types.contains(CardType.Creature)) {
-			abilities.add(KeywordAbility.Summoning_Sickness);
+			noSummoningSickness = false;
 			Engine.registerEventHandler(summonSickRemover);
 		}
 	}
@@ -56,5 +57,9 @@ public abstract class CreatureCard extends GameCard {
 	@Override
 	public String toString() {
 		return String.format("%s:{Types:%s, Abilities:%s, +1/+1s:%d}", name, types, abilities, oneOnes);
+	}
+
+	boolean noSummoningSickness() {
+		return noSummoningSickness;
 	}
 }

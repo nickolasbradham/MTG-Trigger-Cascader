@@ -1,4 +1,4 @@
-package nbradham.mtgTriggerCascade.events;
+package nbradham.mtgTriggerCascade;
 
 public interface GameEvent {
 

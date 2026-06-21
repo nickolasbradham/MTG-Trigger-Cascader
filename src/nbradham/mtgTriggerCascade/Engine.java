@@ -16,7 +16,6 @@ import nbradham.mtgTriggerCascade.cards.CadricSoulKindler;
 import nbradham.mtgTriggerCascade.cards.NykthosParagon;
 import nbradham.mtgTriggerCascade.cards.ShardingSphinx;
 import nbradham.mtgTriggerCascade.cards.TrueConviction;
-import nbradham.mtgTriggerCascade.events.GameEvent;
 import nbradham.mtgTriggerCascade.events.LifeGainedEvent;
 import nbradham.mtgTriggerCascade.events.OpponentCombatDamageEvent;
 import nbradham.mtgTriggerCascade.handlers.CombatBeginHandler;

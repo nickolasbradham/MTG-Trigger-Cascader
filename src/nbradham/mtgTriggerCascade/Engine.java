@@ -2,8 +2,10 @@ package nbradham.mtgTriggerCascade;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.PriorityQueue;
 import java.util.function.Consumer;
 import java.util.function.UnaryOperator;
 
@@ -14,6 +16,9 @@ import nbradham.mtgTriggerCascade.cards.CadricSoulKindler;
 import nbradham.mtgTriggerCascade.cards.NykthosParagon;
 import nbradham.mtgTriggerCascade.cards.ShardingSphinx;
 import nbradham.mtgTriggerCascade.cards.TrueConviction;
+import nbradham.mtgTriggerCascade.events.GameEvent;
+import nbradham.mtgTriggerCascade.events.LifeGainedEvent;
+import nbradham.mtgTriggerCascade.events.OpponentCombatDamageEvent;
 import nbradham.mtgTriggerCascade.handlers.CombatBeginHandler;
 import nbradham.mtgTriggerCascade.handlers.GainLifeHandler;
 import nbradham.mtgTriggerCascade.handlers.PlayerCombatDamageHandler;
@@ -30,6 +35,8 @@ public final class Engine {
 	private final HashSet<TurnStartHandler> turnStartHandlers = new HashSet<>();
 	private final HashSet<PlayerCombatDamageHandler> playerDamageHandlers = new HashSet<>();
 	private final HashSet<GameEventHandler> unregisterQueue = new HashSet<>();
+	private final PriorityQueue<GameEvent> eventQueue = new PriorityQueue<>(Comparator.comparing(e -> e.getPriority()));
+	private short lifeGained = 0, oppDamage = 0;
 
 	private Engine() {
 		engine = this;
@@ -135,7 +142,7 @@ public final class Engine {
 		}
 	}
 
-	public static final boolean mayDoNykthosBuff(final byte countersToAdd) {
+	public static final boolean mayDoNykthosBuff(final int gainedLife) {
 		// TODO: Do better logic.
 		return true;
 	}
@@ -149,12 +156,34 @@ public final class Engine {
 		return true;
 	}
 
-	public static final void dealOpponentCombatDamage(final int damage) {
-		// TODO Auto-generated method stub
+	public static final void dealOpponentCombatDamage(final CreatureCard src, final int damage) {
+		engine.privDealOpponentCombatDamage(src, damage);
 	}
 
-	public static final void gainLife(final int life) {
-		// TODO Auto-generated method stub
+	private final void privDealOpponentCombatDamage(final CreatureCard src, final int damage) {
+		oppDamage += damage;
+		eventQueue.offer(new OpponentCombatDamageEvent(src));
+	}
+
+	public static final void gainLife(final CreatureCard src, final int life) {
+		engine.privGainLife(src, life);
+	}
+
+	private void privGainLife(final CreatureCard src, final int life) {
+		lifeGained += life;
+		eventQueue.offer(new LifeGainedEvent(src, life));
+	}
+
+	private final void proccessEvents() {
+		System.out.printf("  Proccessing event queue(%d)...%n", eventQueue.size());
+		while (eventQueue.size() != 0) {
+			final GameEvent ev = eventQueue.poll();
+			System.out.printf("    Proccessing %s%n", ev);
+			if (ev instanceof OpponentCombatDamageEvent)
+				playerDamageHandlers.forEach(h -> h.onDamageDealt(((OpponentCombatDamageEvent) ev).src()));
+			else if (ev instanceof LifeGainedEvent)
+				gainLifeHandlers.forEach(h -> h.onLifeGain(((LifeGainedEvent) ev).amount()));
+		}
 	}
 
 	private final void start() {
@@ -196,11 +225,15 @@ public final class Engine {
 				c.attack();
 			}
 		});
+		proccessEvents();
 		System.out.printf("  Attacking (Normal)...%n", attackers.size(), attackers);
 		attackers.forEach(c -> {
 			System.out.printf("    Attack: %s%n", c);
 			c.attack();
 		});
+		proccessEvents();
+		System.out.printf("Life Gained: %d  Damage Dealt: %d  Board(%d): %s%n", lifeGained, oppDamage, board.size(),
+				board);
 	}
 
 	public static void main(final String[] args) {

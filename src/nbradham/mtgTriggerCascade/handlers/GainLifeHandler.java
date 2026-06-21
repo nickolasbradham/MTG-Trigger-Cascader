@@ -8,7 +8,7 @@ public abstract class GainLifeHandler extends GameEventHandler {
 		super(text);
 	}
 
-	public abstract void onLifeGain(byte gainedLife);
+	public abstract void onLifeGain(final int life);
 
 	@Override
 	public final String toString() {

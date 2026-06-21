@@ -9,7 +9,7 @@ public final class Thopter extends CreatureCard {
 	private static final CardType[] TYPES = { CardType.Creature, CardType.Artifact, CardType.Token, CardType.Thopter };
 
 	public Thopter() {
-		super("Phyrexian Myr", TYPES, 1);
+		super("Thopter", TYPES, 1);
 		abilities.add(KeywordAbility.Flying);
 	}
 }

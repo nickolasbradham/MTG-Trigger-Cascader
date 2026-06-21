@@ -1,8 +1,8 @@
 package nbradham.mtgTriggerCascade.cards;
 
 import nbradham.mtgTriggerCascade.CardType;
-import nbradham.mtgTriggerCascade.Engine;
 import nbradham.mtgTriggerCascade.CreatureCard;
+import nbradham.mtgTriggerCascade.Engine;
 import nbradham.mtgTriggerCascade.KeywordAbility;
 import nbradham.mtgTriggerCascade.cards.tokens.Thopter;
 import nbradham.mtgTriggerCascade.handlers.PlayerCombatDamageHandler;

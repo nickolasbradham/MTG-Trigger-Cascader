@@ -10,7 +10,7 @@ public abstract class CreatureCard extends GameCard {
 	private final TurnStartHandler summonSickRemover;
 	protected final HashSet<KeywordAbility> abilities = new HashSet<>();
 	protected final int pow;
-	private byte oneOnes = 0;
+	private short oneOnes = 0;
 
 	protected CreatureCard(String cardName, CardType[] cardTypes, final int power) {
 		super(cardName, cardTypes);
@@ -38,8 +38,8 @@ public abstract class CreatureCard extends GameCard {
 		}
 	}
 
-	public final void addOneOnes(final byte toAdd) {
-		oneOnes += toAdd;
+	public final void addOneOnes(final int gainedLife) {
+		oneOnes += gainedLife;
 	}
 
 	final boolean hasAbility(final KeywordAbility ability) {
@@ -47,14 +47,14 @@ public abstract class CreatureCard extends GameCard {
 	}
 
 	final void attack() {
-		final int damage=pow+oneOnes;
-		Engine.dealOpponentCombatDamage(damage);
-		if(abilities.contains(KeywordAbility.Lifelink))
-			Engine.gainLife(damage);
+		final int damage = pow + oneOnes;
+		Engine.dealOpponentCombatDamage(this, damage);
+		if (abilities.contains(KeywordAbility.Lifelink))
+			Engine.gainLife(this, damage);
 	}
 
 	@Override
 	public String toString() {
-		return String.format("%s:{Types:%s, Abilities:%s}", name, types, abilities);
+		return String.format("%s:{Types:%s, Abilities:%s, +1/+1s:%d}", name, types, abilities, oneOnes);
 	}
 }

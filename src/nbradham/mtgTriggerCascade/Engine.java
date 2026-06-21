@@ -46,7 +46,7 @@ public final class Engine {
 			final KeywordAbility[] keywords) {
 		if (isCardAllTypes(card, types)) {
 			System.out.printf("  %s is gaining %s from board state.%n", card, Arrays.toString(keywords));
-			card.addKeywordAbilities(keywords);
+			((CreatureCard) card).addKeywordAbilities(keywords);
 		}
 	}
 
@@ -90,8 +90,8 @@ public final class Engine {
 		engine.addCard(card);
 	}
 
-	public static final GameCard mayChooseToken() {
-		GameCard gc = engine.board.get(0);
+	public static final CreatureCard mayChooseToken() {
+		CreatureCard gc = (CreatureCard) engine.board.get(0);
 		System.out.printf("Choosing token: %s%n", gc);
 		return gc;
 	}
@@ -111,7 +111,7 @@ public final class Engine {
 			GameCard orig = field.get(i), after = operator.apply(orig);
 			field.set(i, after);
 			if (orig != after)
-				addCardModifiers(after);
+				addCardModifiers((CreatureCard) after);
 		}
 	}
 
@@ -141,16 +141,28 @@ public final class Engine {
 		});
 		unregisterHandlers();
 		System.out.printf("  Declare attackers. Board state(%d): %s%n", board.size(), board);
-		final ArrayList<GameCard> attackers = new ArrayList<>();
+		final ArrayList<CreatureCard> attackers = new ArrayList<>();
 		board.forEach(c -> {
 			if (c.isType(CardType.Creature) && c.isUntapped()
-					&& (!c.hasAbility(KeywordAbility.Summoning_Sickness) || c.hasAbility(KeywordAbility.Haste))) {
-				if (!c.hasAbility(KeywordAbility.Vigilance))
+					&& (!((CreatureCard) c).hasAbility(KeywordAbility.Summoning_Sickness)
+							|| ((CreatureCard) c).hasAbility(KeywordAbility.Haste))) {
+				if (!((CreatureCard) c).hasAbility(KeywordAbility.Vigilance))
 					c.tap();
-				attackers.add(c);
+				attackers.add((CreatureCard) c);
 			}
 		});
-		System.out.printf("  Attackers(%d):%s%n  Attacking...%n", attackers.size(), attackers);
+		System.out.printf("  Attackers(%d):%s%n  Attacking (First Strike)...%n", attackers.size(), attackers);
+		attackers.forEach(c -> {
+			if (c.hasAbility(KeywordAbility.Double_Strike) || c.hasAbility(KeywordAbility.First_Strike)) {
+				System.out.printf("    Attack: %s%n", c);
+				c.attack();
+			}
+		});
+		System.out.printf("  Attacking (Normal)...%n", attackers.size(), attackers);
+		attackers.forEach(c -> {
+			System.out.printf("    Attack: %s%n", c);
+			c.attack();
+		});
 	}
 
 	private final void unregisterHandlers() {

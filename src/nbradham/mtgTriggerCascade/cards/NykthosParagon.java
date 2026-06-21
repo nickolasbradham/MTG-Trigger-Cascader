@@ -2,11 +2,11 @@ package nbradham.mtgTriggerCascade.cards;
 
 import nbradham.mtgTriggerCascade.CardType;
 import nbradham.mtgTriggerCascade.Engine;
-import nbradham.mtgTriggerCascade.GameCard;
+import nbradham.mtgTriggerCascade.CreatureCard;
 import nbradham.mtgTriggerCascade.handlers.GainLifeHandler;
 import nbradham.mtgTriggerCascade.handlers.TurnStartHandler;
 
-public final class NykthosParagon extends GameCard {
+public final class NykthosParagon extends CreatureCard {
 
 	private static final CardType[] TYPES = { CardType.Enchantment, CardType.Creature, CardType.Human,
 			CardType.Soldier };
@@ -25,7 +25,7 @@ public final class NykthosParagon extends GameCard {
 			if (Engine.mayDoNykthosBuff(gainedLife)) {
 				Engine.forEach(c -> {
 					if (c.isType(CardType.Creature))
-						c.addOneOnes(gainedLife);
+						((CreatureCard) c).addOneOnes(gainedLife);
 				});
 				Engine.unregisterEventHandler(this);
 				Engine.registerEventHandler(TURN_START_HANDLER);
@@ -34,7 +34,7 @@ public final class NykthosParagon extends GameCard {
 	};
 
 	public NykthosParagon() {
-		super("Nykthos Paragon", TYPES);
+		super("Nykthos Paragon", TYPES, 4);
 	}
 
 	@Override

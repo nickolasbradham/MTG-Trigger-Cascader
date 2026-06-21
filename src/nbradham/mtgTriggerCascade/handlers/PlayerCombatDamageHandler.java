@@ -1,6 +1,6 @@
 package nbradham.mtgTriggerCascade.handlers;
 
-import nbradham.mtgTriggerCascade.GameCard;
+import nbradham.mtgTriggerCascade.CreatureCard;
 import nbradham.mtgTriggerCascade.GameEventHandler;
 
 public abstract class PlayerCombatDamageHandler extends GameEventHandler {
@@ -9,7 +9,7 @@ public abstract class PlayerCombatDamageHandler extends GameEventHandler {
 		super(text);
 	}
 
-	public abstract void onDamageDealt(final GameCard src);
+	public abstract void onDamageDealt(final CreatureCard src);
 
 	@Override
 	public final String toString() {

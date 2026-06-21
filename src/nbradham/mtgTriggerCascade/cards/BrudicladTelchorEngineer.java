@@ -2,20 +2,20 @@ package nbradham.mtgTriggerCascade.cards;
 
 import nbradham.mtgTriggerCascade.CardType;
 import nbradham.mtgTriggerCascade.Engine;
-import nbradham.mtgTriggerCascade.GameCard;
+import nbradham.mtgTriggerCascade.CreatureCard;
 import nbradham.mtgTriggerCascade.KeywordAbility;
 import nbradham.mtgTriggerCascade.TokenCopy;
 import nbradham.mtgTriggerCascade.handlers.CombatBeginHandler;
 import nbradham.mtgTriggerCascade.cards.tokens.PhyrexianMyr;
 
-public final class BrudicladTelchorEngineer extends GameCard {
+public final class BrudicladTelchorEngineer extends CreatureCard {
 
 	private static final CardType[] TYPES = { CardType.Legendary, CardType.Artifact, CardType.Creature,
 			CardType.Artificer, CardType.Phyrexian }, COND_TYPES = { CardType.Token, CardType.Creature };
 	private static final KeywordAbility[] MODS = new KeywordAbility[] { KeywordAbility.Haste };
 
 	public BrudicladTelchorEngineer() {
-		super("Brudiclad, Telchor Engineer", TYPES);
+		super("Brudiclad, Telchor Engineer", TYPES, 4);
 	}
 
 	@Override
@@ -27,7 +27,7 @@ public final class BrudicladTelchorEngineer extends GameCard {
 			@Override
 			public final void beginCombat() {
 				Engine.staticAddCard(new PhyrexianMyr());
-				GameCard token = Engine.mayChooseToken();
+				CreatureCard token = Engine.mayChooseToken();
 				Engine.replaceAll(c -> {
 					if (c.isType(CardType.Token) && c != token)
 						return TokenCopy.createTokenCopy(token);

@@ -5,5 +5,5 @@ package nbradham.mtgTriggerCascade;
  * of the problems of considering it one. Too bad!
  */
 public enum KeywordAbility {
-	DoubleStrike, Lifelink, Flying, Haste, Summoning_Sickness, Vigilance
+	Double_Strike, Lifelink, Flying, Haste, Summoning_Sickness, Vigilance, First_Strike
 }

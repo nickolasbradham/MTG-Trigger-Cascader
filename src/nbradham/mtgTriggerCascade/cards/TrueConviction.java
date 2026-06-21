@@ -8,7 +8,7 @@ import nbradham.mtgTriggerCascade.KeywordAbility;
 public final class TrueConviction extends GameCard {
 
 	private static final CardType[] TYPES = { CardType.Enchantment }, COND_TYPES = { CardType.Creature };
-	private static final KeywordAbility[] MODS = new KeywordAbility[] { KeywordAbility.DoubleStrike,
+	private static final KeywordAbility[] MODS = new KeywordAbility[] { KeywordAbility.Double_Strike,
 			KeywordAbility.Lifelink };
 
 	public TrueConviction() {

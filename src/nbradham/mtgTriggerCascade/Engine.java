@@ -82,7 +82,7 @@ public final class Engine {
 	}
 
 	public static final void unregisterEventHandler(final GameEventHandler handler) {
-		System.out.printf("  Adding %s to unregister queue...%n", handler);
+		System.out.printf("  Adding %s to unregister pool...%n", handler);
 		engine.unregisterQueue.add(handler);
 	}
 
@@ -117,6 +117,44 @@ public final class Engine {
 
 	public static final void replaceAll(final UnaryOperator<GameCard> operator) {
 		Engine.engine.privReplaceAll(operator);
+	}
+
+	private final void unregisterHandlers() {
+		System.out.printf("Unregister pool cleanup(%d)...%n", unregisterQueue.size());
+		for (GameEventHandler handler : unregisterQueue.toArray(new GameEventHandler[0])) {
+			System.out.printf("  Unregistering: %s%n", handler);
+			unregisterQueue.remove(handler);
+			if (handler instanceof CombatBeginHandler)
+				combatHandlers.remove(handler);
+			else if (handler instanceof GainLifeHandler)
+				gainLifeHandlers.remove(handler);
+			else if (handler instanceof TurnStartHandler)
+				turnStartHandlers.remove(handler);
+			else if (handler instanceof PlayerCombatDamageHandler)
+				playerDamageHandlers.remove(handler);
+		}
+	}
+
+	public static final boolean mayDoNykthosBuff(final byte countersToAdd) {
+		// TODO: Do better logic.
+		return true;
+	}
+
+	public static final void forEach(final Consumer<GameCard> consumer) {
+		Engine.engine.board.forEach(consumer);
+	}
+
+	// More of a formality.
+	public static final boolean mayDoShardingAbility() {
+		return true;
+	}
+
+	public static final void dealOpponentCombatDamage(final int damage) {
+		// TODO Auto-generated method stub
+	}
+
+	public static final void gainLife(final int life) {
+		// TODO Auto-generated method stub
 	}
 
 	private final void start() {
@@ -165,41 +203,11 @@ public final class Engine {
 		});
 	}
 
-	private final void unregisterHandlers() {
-		System.out.printf("Unregister queue cleanup(%d)...%n", unregisterQueue.size());
-		for (GameEventHandler handler : unregisterQueue.toArray(new GameEventHandler[0])) {
-			System.out.printf("  Unregistering: %s%n", handler);
-			unregisterQueue.remove(handler);
-			if (handler instanceof CombatBeginHandler)
-				combatHandlers.remove(handler);
-			else if (handler instanceof GainLifeHandler)
-				gainLifeHandlers.remove(handler);
-			else if (handler instanceof TurnStartHandler)
-				turnStartHandlers.remove(handler);
-			else if (handler instanceof PlayerCombatDamageHandler)
-				playerDamageHandlers.remove(handler);
-		}
-	}
-
 	public static void main(final String[] args) {
 		if (System.console() == null && args.length > 1 && args[0].equals("debug")) {
 			JOptionPane.showMessageDialog(null, "Run me from the command line.");
 			return;
 		}
 		new Engine().start();
-	}
-
-	public static final boolean mayDoNykthosBuff(final byte countersToAdd) {
-		// TODO: Do better logic.
-		return true;
-	}
-
-	public static final void forEach(final Consumer<GameCard> consumer) {
-		Engine.engine.board.forEach(consumer);
-	}
-
-	// More of a formality.
-	public static final boolean mayDoShardingAbility() {
-		return true;
 	}
 }

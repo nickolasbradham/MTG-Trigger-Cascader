@@ -29,7 +29,9 @@ public abstract class CreatureCard extends GameCard {
 		abilities.addAll(Arrays.asList(toAdd));
 	}
 
+	@Override
 	protected void onEnter() {
+		super.onEnter();
 		if (types.contains(CardType.Creature)) {
 			abilities.add(KeywordAbility.Summoning_Sickness);
 			Engine.registerEventHandler(summonSickRemover);
@@ -45,7 +47,10 @@ public abstract class CreatureCard extends GameCard {
 	}
 
 	final void attack() {
-		// TODO Auto-generated method stub
+		final int damage=pow+oneOnes;
+		Engine.dealOpponentCombatDamage(damage);
+		if(abilities.contains(KeywordAbility.Lifelink))
+			Engine.gainLife(damage);
 	}
 
 	@Override
